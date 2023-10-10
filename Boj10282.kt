@@ -1,15 +1,16 @@
 package ps
 
-import java.lang.Integer.max
+import java.io.BufferedReader
+import java.io.BufferedWriter
+import java.io.InputStreamReader
+import java.io.OutputStreamWriter
 import java.util.PriorityQueue
+import kotlin.math.max
 
 /**
  * @author : Unagi_zoso
  * @date : 2023-10-07
  */
-
-val br = System.`in`.bufferedReader()
-val bw = System.out.bufferedWriter()
 
 data class ComparablePair<T : Comparable<T>>(val timeCost: T, val nodeId: T) : Comparable<ComparablePair<T>> {
     override fun compareTo(other: ComparablePair<T>): Int {
@@ -54,28 +55,30 @@ fun computeResult(numOfComputers: Int, distList: IntArray): IntArray {
     return result
 }
 
-fun solve() {
-    val (n, d, c) = br.readLine().split(' ').map { it.toInt() }
+fun solve(reader: BufferedReader, writer: BufferedWriter) {
+    val (n, d, c) = reader.readLine().split(' ').map { it.toInt() }
 
-    // backing property는 이렇게 쓰는건가요? 살짝 억지로 쓴 느낌이..
     val tempDependencyList = MutableList(100005) { ArrayList<ComparablePair<Int>>() }
     repeat(d) {
-        val (a, b, s) = br.readLine().split(' ').map { it.toInt() }
+        val (a, b, s) = reader.readLine().split(' ').map { it.toInt() }
         tempDependencyList[b].add(ComparablePair(s, a))
     }
     val dependencyList = DependencyList(tempDependencyList)
 
     val result = dijkstra(n, c, dependencyList)
-    bw.write("${result[0]} ${result[1]}\n")
+
+    writer.write("${result[0]} ${result[1]}\n")
 }
 
 fun main() {
-    val t = br.readLine().toInt()
-
-    repeat(t) {
-        solve()
+    val br = BufferedReader(InputStreamReader(System.`in`))
+    val bw = BufferedWriter(OutputStreamWriter(System.out))
+    br.use { reader ->
+        bw.use { writer ->
+            val t = reader.readLine().toInt()
+            repeat(t) {
+                solve(reader, writer)
+            }
+        }
     }
-
-    br.close()
-    bw.close()
 }
