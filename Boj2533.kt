@@ -1,6 +1,6 @@
 package ps
 
-import java.lang.Integer.min
+import kotlin.math.min
 
 /**
  * @author : Unagi_zoso
@@ -9,10 +9,9 @@ import java.lang.Integer.min
 
 const val MAX_NUM_OF_NODES = 1000005
 
-val br = System.`in`.bufferedReader()
-val nodes = Array(MAX_NUM_OF_NODES) { ArrayList<Int>() }
-val dp = Array(MAX_NUM_OF_NODES) { IntArray(2) { 0 } }
-val visited = Array(MAX_NUM_OF_NODES) { false }
+val nodes = Array(MAX_NUM_OF_NODES) { arrayListOf<Int>() }
+val dp = Array(MAX_NUM_OF_NODES) { IntArray(2) }
+val visited = BooleanArray(MAX_NUM_OF_NODES) // default false
 
 /**
  * Top-Down 방식
@@ -32,14 +31,14 @@ fun initializeDPTable(nodeId: Int) {
 }
 
 fun main() = with(System.out.bufferedWriter()) {
-    repeat(br.readLine().toInt() - 1) {
-        val (i, j) = br.readLine().split(' ').map { it.toInt() }
-        nodes[i].add(j)
-        nodes[j].add(i)
+    System.`in`.bufferedReader().use { reader ->
+        repeat(reader.readLine().toInt() - 1) {
+            val (i, j) = reader.readLine().split(' ').map { it.toInt() }
+            nodes[i].add(j)
+            nodes[j].add(i)
+        }
     }
-    br.close()
 
     initializeDPTable(1)
-    write("${min(dp[1][0], dp[1][1])}")
-    close()
+    use { it.write("${min(dp[1][0], dp[1][1])}") }
 }
