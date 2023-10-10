@@ -5,63 +5,96 @@ package ps
  * @date : 2023-09-26
  */
 
-var n = 0
-var ans = 0
 val check = Array(1005) { false }
-lateinit var rectangles: Array<Rectangle>
 
-data class Rectangle(
-    val x1: Int = 0,
-    val y1: Int = 0,
-    val x2: Int = 0,
-    val y2: Int = 0,
+// 이펙티브 코틀린 아이템 1. 16페이지 참고. 변경 가능 지점이 프로퍼티 자체. (한 번 써보고 싶어서 넣어봤습니다!)
+// 멀티쓰레드 관점에서 더 안정적일 순 있어도 기존 자바의 String처럼 GC 성능에 영향을 주진 않을까? 하는 생각이 드네요.
+var rectangles = arrayOf<Rectangle>()
+
+// 어떻게 하면 split()을 부생성자에게 넣을 수 있을지 고민하다. backing property 로 만들어보았습니다.
+// 부생성자를 통해 딱 한 번 _x1, _y1, _x2, _y2가 할당됩니다.
+// component 정의 위해서 data class에서 class로 변경하였습니다.
+class Rectangle(
+    private var _x1: Int = 0,
+    private var _y1: Int = 0,
+    private var _x2: Int = 0,
+    private var _y2: Int = 0,
 ) {
-    constructor(list: List<String>) : this(list[0].toInt(), list[1].toInt(), list[2].toInt(), list[3].toInt())
-}
+    val x1: Int
+        get() = _x1
 
-fun main() = with(System.out.bufferedWriter()) {
-    val br = System.`in`.bufferedReader()
-    n = br.readLine().toInt()
-    rectangles = Array(n) { br.readLine().split(" ").let { Rectangle(it) } }
-    br.close()
+    val y1: Int
+        get() = _y1
 
-    for (i in 0 until n) {
-        val (x1, y1, x2, y2) = rectangles[i]
+    val x2: Int
+        get() = _x2
 
-        if (isContainStartPos(x1, y1, x2, y2)) ans--
+    val y2: Int
+        get() = _y2
 
-        if (check[i]) continue
-        check[i] = true
-        unionFind(i)
-        ans++
+    constructor(inputStr: String) : this() {
+        inputStr.split(' ').map { it.toInt() }.let { _x1 = it[0]; _y1 = it[1]; _x2 = it[2]; _y2 = it[3] }
     }
 
-    write("$ans")
-    close()
+    operator fun component1(): Int {
+        return _x1
+    }
+
+    operator fun component2(): Int {
+        return _y1
+    }
+
+    operator fun component3(): Int {
+        return _x2
+    }
+
+    operator fun component4(): Int {
+        return _y2
+    }
+}
+
+fun main() {
+    var ans = 0
+    System.`in`.bufferedReader().use { reader ->
+        val n = reader.readLine().toInt()
+        repeat(n) { rectangles += Rectangle(reader.readLine()) } // readLine() 에서 'Possibly blocking call in non-blocking context could lead to thread starvation' warning이 뜨는데 어떤 왜 발생하는지 잘 모르겠습니다..
+        // rectangles = Array(n) { Rectangle(reader.readLine()) }
+
+        for (i in 0 until n) {
+            val (x1, y1, x2, y2) = rectangles[i]
+
+            if (isContainStartPos(x1, y1, x2, y2)) ans--
+
+            if (check[i]) continue
+            check[i] = true
+            unionFind(i, n)
+            ans++
+        }
+    }
+
+    System.out.bufferedWriter().use { it.write("$ans") }
 }
 
 fun isContainStartPos(x1: Int, y1: Int, x2: Int, y2: Int): Boolean {
-    return (x1 == 0 && (y1 <= 0 && y2 >= 0)) || (x2 == 0 && (y1 <= 0 && y2 >= 0)) ||
-        (y1 == 0 && (x1 <= 0 && x2 >= 0)) || (y2 == 0 && (x1 <= 0 && x2 >= 0))
+    return ((x1 == 0 || x2 == 0) and (y1 <= 0 && y2 >= 0)) or
+        ((y1 == 0 || y2 == 0) and (x1 <= 0 && x2 >= 0))
 }
 
-fun unionFind(idx: Int) {
-    for (i in 0 until n) {
+fun unionFind(idx: Int, numOfRectangles: Int) {
+    for (i in 0 until numOfRectangles) {
         if (check[i] or isNotOverlap(rectangles[idx], rectangles[i])) continue
         check[i] = true
-        unionFind(i)
+        unionFind(i, numOfRectangles)
     }
 }
 
 /*
  * 두 사각형의 가장 왼쪽, 오른쪽, 위, 아래 위치를 비교해 겹쳐지는 부분이 없는지 반환한다.
  */
-// 함수를 호출하는 부분에서(50번 줄) ! 연산자를 쓰고싶지 않아 isOverlap() -> isNotOverlap()으로 수정하였는데 클린코드 관점에서 괜찮은 방식일까요? 큰 영향이 있나 싶은 생각도 드네요.
 fun isNotOverlap(lhs: Rectangle, rhs: Rectangle): Boolean {
     val lhsLeft: Int; val lhsRight: Int; val lhsAbove: Int; val lhsBottom: Int
     val rhsLeft: Int; val rhsRight: Int; val rhsAbove: Int; val rhsBottom: Int
 
-    // 중복되어 보이는 코드 같은데 이거다 싶은 개선법이 잘 안 떠오르네요.
     if (lhs.x1 < lhs.x2) { lhsLeft = lhs.x1; lhsRight = lhs.x2 } else { lhsLeft = lhs.x2; lhsRight = lhs.x1 }
     if (lhs.y1 < lhs.y2) { lhsBottom = lhs.y1; lhsAbove = lhs.y2 } else { lhsBottom = lhs.y2; lhsAbove = lhs.y1 }
     if (rhs.x1 < rhs.x2) { rhsLeft = rhs.x1; rhsRight = rhs.x2 } else { rhsLeft = rhs.x2; rhsRight = rhs.x1 }
@@ -72,9 +105,4 @@ fun isNotOverlap(lhs: Rectangle, rhs: Rectangle): Boolean {
             ((lhsLeft < rhsLeft) and (lhsAbove > rhsAbove) and (lhsRight > rhsRight) and (lhsBottom < rhsBottom)) or
             ((rhsLeft < lhsLeft) and (rhsAbove > lhsAbove) and (rhsRight > lhsRight) and (rhsBottom < lhsBottom))
         )
-}
-
-// 디버깅용
-fun showAllRectangles(list: List<Rectangle>) {
-    list.forEach { print("${it.x1}  ${it.y1}  ${it.x2}  ${it.y2} \n") }
 }
