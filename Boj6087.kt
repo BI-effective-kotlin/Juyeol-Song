@@ -1,16 +1,16 @@
 package ps
 
-import java.util.*
-import kotlin.collections.ArrayList
+import java.util.LinkedList
 
 /**
  * @author : Unagi_zoso
  * @date : 2023-10-05
  */
+
 val br = System.`in`.bufferedReader()
 val board = mutableListOf<String>()
 val visited = Array(105) { IntArray(105) { -1 } }
-val startAndDest = ArrayList<Pair<Int, Int>>(2)
+val startAndDest = arrayListOf<Pair<Int, Int>>()
 
 val dirX = arrayOf(-1, 1, 0, 0)
 val dirY = arrayOf(0, 0, -1, 1)
@@ -18,21 +18,22 @@ val dirY = arrayOf(0, 0, -1, 1)
 data class Node(val y: Int, val x: Int)
 
 fun main() = with(System.out.bufferedWriter()) {
-    val (m, n) = br.readLine().split(' ').map { it.toInt() }
-    for (row in 0 until n) {
-        board.add(
-            br.readLine().apply {
-                this.forEachIndexed { col, ch ->
-                    if (ch == 'C') {
-                        startAndDest.add(Pair(row, col))
+    br.use { reader ->
+        val (m, n) = reader.readLine().split(' ').map { it.toInt() }
+        for (row in 0 until n) {
+            board.add(
+                br.readLine().apply {
+                    this.forEachIndexed { col, ch ->
+                        if (ch == 'C') {
+                            startAndDest.add(Pair(row, col))
+                        }
                     }
-                }
-            },
-        )
+                },
+            )
+        }
+
+        use { write("${ bfs(n, m) }") }
     }
-    br.close()
-    write("${ bfs(n, m) }")
-    close()
 }
 
 fun bfs(n: Int, m: Int): Int {
@@ -49,6 +50,7 @@ fun bfs(n: Int, m: Int): Int {
      * 회전(이전 방향과 다름)인 경우 nexQ에 담아 curQ가 소진될 때 까지 대기한다.
      * 회전한 횟수가 낮은 경우를 우선적으로 접근해 최소의 해를 구한다. (curQ와 nexQ의 회전횟수는 1 차이다.)
      */
+
     var cnt = 0
     val maxDistance = 105
     while (true) {
