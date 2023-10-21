@@ -4,7 +4,7 @@ package ps.ps
  * @author : Unagi_zoso
  * @date : 2023-10-20
  */
-// https://www.acmicpc.net/problem/14002
+// https://www.acmicpc.net/problem/14003
 
 fun main() = System.`in`.bufferedReader().use { reader ->
     System.out.bufferedWriter().use { writer ->
