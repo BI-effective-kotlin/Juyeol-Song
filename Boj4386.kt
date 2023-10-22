@@ -42,18 +42,16 @@ fun unionFind(i: Int, unionCheck: IntArray): Int {
 }
 
 fun PriorityQueue<CostAndPoints>.initializeWithArray(array: Array<List<Double>>) {
-    array.let {
-        it.forEachIndexed { lPointIdx, lPointPos ->
-            for (rPointIdx in lPointIdx + 1 until it.size) {
-                val (rPointX, rPointY) = it[rPointIdx]
-                this.add(
-                    CostAndPoints(
-                        sqrt((lPointPos[0] - rPointX).pow(2) + (lPointPos[1] - rPointY).pow(2)), // 점 사이의 거리
-                        lPointIdx,
-                        rPointIdx,
-                    ),
-                )
-            }
+    array.forEachIndexed { lPointIdx, lPointPos ->
+        for (rPointIdx in lPointIdx + 1 until array.size) {
+            val (rPointX, rPointY) = array[rPointIdx]
+            this.add(
+                CostAndPoints(
+                    sqrt((lPointPos[0] - rPointX).pow(2) + (lPointPos[1] - rPointY).pow(2)), // 점 사이의 거리
+                    lPointIdx,
+                    rPointIdx,
+                ),
+            )
         }
     }
 }
