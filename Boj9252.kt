@@ -7,6 +7,7 @@ import kotlin.math.max
  * @author : Unagi_zoso
  * @date : 2023-10-21
  */
+// https://www.acmicpc.net/problem/9252
 
 fun main() = System.`in`.bufferedReader().use { reader ->
     System.out.bufferedWriter().use { writer ->
@@ -14,7 +15,7 @@ fun main() = System.`in`.bufferedReader().use { reader ->
         val rightString = reader.readLine()
 
         // [0][n], [n][0] 는 0으로 패딩 적용 (0 <= n <= max(rightString.length, leftString.length)
-        val board = Array(rightString.length + 1) { IntArray(leftString.length + 1) { 0 } }
+        val board = Array(rightString.length + 1) { IntArray(leftString.length + 1) }
 
         makeLCSBoard(rightString, leftString, board)
 
