@@ -9,12 +9,11 @@ package ps.ps
 fun main() = System.`in`.bufferedReader().use { reader ->
     System.out.bufferedWriter().use { writer ->
         val n = reader.readLine().toInt()
-        val dpTable = MutableList<MutableList<String>>(1005) { mutableListOf() }
+        val dpTable = Array<MutableList<String>>(1005) { mutableListOf() }
         val numbers = reader.readLine().split(' ').map { it.toInt() }
 
-        dpTable[0].add(numbers[0].toString())
-        for (i in 1 until n) {
-            for (j in 0 until i) {
+        repeat(n) { i ->
+            repeat(i) { j ->
                 if (numbers[j] < numbers[i] && dpTable[j].size + 1 > dpTable[i].size) {
                     dpTable[i] = dpTable[j].toMutableList()
                 }
