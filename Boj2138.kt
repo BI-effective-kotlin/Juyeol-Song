@@ -15,7 +15,7 @@ import kotlin.math.min
  */
 fun main() = System.`in`.bufferedReader().use() { reader ->
     System.out.bufferedWriter().use() { writer ->
-        val n = reader.readLine().toInt()
+        reader.readLine().toInt() // 코드 상에서 사용되지 않는 값입니다.
         val start = reader.readLine().map { it.code - '0'.code }
         val target = reader.readLine().map { it.code - '0'.code }
 
@@ -51,7 +51,7 @@ fun init(start: MutableList<Int>, target: List<Int>, _switchCount: Int): Int {
         }
     }
 
-    if (start.isNotEqualOtherList(target)) {
+    if (start != target) { // 연산자로 list 원소 비교 가능
         return Int.MAX_VALUE
     }
     return switchCount
@@ -64,15 +64,4 @@ fun MutableList<Int>.switchOn(idx: Int) {
         if (nextIdx !in 0 until this.size) { continue }
         this[nextIdx] = (this[nextIdx] + 1) % 2
     }
-}
-
-// 현재 list가 다른 list와 일치하지 않는지 boolean으로 반환한다.
-// 일치하지 않을 시 true, 일치할 시 false
-fun List<Int>.isNotEqualOtherList(other: List<Int>): Boolean {
-    this.forEachIndexed { index, value ->
-        if (value != other[index]) {
-            return true
-        }
-    }
-    return false
 }
