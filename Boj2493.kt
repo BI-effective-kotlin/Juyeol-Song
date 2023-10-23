@@ -13,7 +13,11 @@ val resultList = IntArray(500_005)
 object Stack {
     private val stk = mutableListOf<TowerInfo>()
 
-    fun checkAndAdd(curTower: TowerInfo) {
+    fun checkAndAdd(id: Int, height: Int) {
+        checkAndAdd(TowerInfo(id + 1, height))
+    }
+
+    private fun checkAndAdd(curTower: TowerInfo) {
         if (stk.isEmpty()) {
             stk.add(curTower)
             return
@@ -26,8 +30,7 @@ object Stack {
             while (stk.isNotEmpty() && stk.last().height < curTower.height) {
                 stk.removeLast()
             }
-            resultList[curTower.id] = stk.lastOrNull()?.id ?: 0 // 현재 방식과 아래 방식 중 뭐가 더 코틀린스러운 표현일까요?
-            // resultList[curTower.id] = if (stk.isNotEmpty()) stk.last().id else 0
+            resultList[curTower.id] = stk.lastOrNull()?.id ?: 0
         }
         stk.add(curTower)
     }
@@ -37,9 +40,7 @@ fun main() = System.`in`.bufferedReader().use { reader ->
     val n = reader.readLine().toInt()
     val inputList = reader.readLine().split(' ').map { it.toInt() }
 
-    inputList.forEachIndexed { id, height ->
-        Stack.checkAndAdd(TowerInfo(id + 1, height))
-    }
+    inputList.forEachIndexed(Stack::checkAndAdd)
 
     System.out.bufferedWriter().use { writer ->
         for (i in 1..n) {
