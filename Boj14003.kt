@@ -25,6 +25,9 @@ fun main() = System.`in`.bufferedReader().use { reader ->
     }
 }
 
+/**
+ * @see kotlin.collections.binarySearch
+ */
 fun makeLISListsWithInputList(
     indexList: Array<Int>,
     valueList: MutableList<Int>,
@@ -38,37 +41,14 @@ fun makeLISListsWithInputList(
             valueList.add(inputList[inputIdx])
             indexList[inputIdx] = valueList.size - 1 // indexList에는 input값이 저장된 valueList의 인덱스가 저장된다
         } else { // valueList에서 현재 input값이 들어갈 수 있는 위치(인덱스)를 이분탐색으로 구한다.
-            val result = valueList.binarySearch(1, valueList.lastIndex, inputList[inputIdx])
+            val result = valueList.binarySearch(element = inputList[inputIdx], 1, valueList.size).let {
+                if (it < 0) -it - 1 else it // binarySearch에서 target을 찾지 못하면 negative 값을 반환한다.
+            }
+
             valueList[result] = inputList[inputIdx]
             indexList[inputIdx] = result
         }
     }
-}
-
-/**
- * target을 찾지 못할 시 반환하는 인덱스의 기준이 코틀린 내장 바이너리 서치와 다르다.
- *
- * Boj14003.kt에서 구현된 바이너리 서치의 경우
- * if list[mid] < target { left = mid + 1 }
- * else { right = mid }
- *
- * 코틀린 내장 바이너리 서치의 경우
- * if list[mid] < target { left = mid + 1 }
- * else if list[mid] > target { right = mid - 1}
- * else { return mid } // target을 찾은 경우
- *
- * return -(left + 1) // target을 찾지 못한 경우
- *
- * @see kotlin.collections.binarySearch
- */
-fun List<Int>.binarySearch(_left: Int, _right: Int, target: Int): Int {
-    var left = _left
-    var right = _right
-    while (left < right) {
-        val mid = (left + right) / 2
-        if (this[mid] < target) left = mid + 1 else right = mid
-    }
-    return right
 }
 
 fun findLIS(indexList: Array<Int>, inputList: List<Int>, _sizeOfLIS: Int): List<Int> {
