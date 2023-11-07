@@ -1,6 +1,5 @@
 package ps.ps
 
-import kotlin.math.pow
 import kotlin.math.sqrt
 
 /**
@@ -26,7 +25,7 @@ fun main() = System.`in`.bufferedReader().use { reader ->
             val radius = reader.readLine().toInt()
             var ans = 0
             for (col in 0..radius) {
-                ans += sqrt(radius.toDouble().pow(2) - col.toDouble().pow(2)).toInt()
+                ans += sqrt((radius * radius - col * col).toDouble()).toInt()
             }
             ans = 4 * ans + 1
             writer.write("#$turn $ans\n")
