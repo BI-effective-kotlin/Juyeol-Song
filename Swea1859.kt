@@ -20,17 +20,19 @@ package ps.ps
  * stack의 모든 원소를 보았다면 결과를 출력한다. 출력형식 ex) #1 45
  */
 fun main() = System.`in`.bufferedReader().use { reader ->
-    repeat(reader.readLine().toInt()) {
-        reader.readLine().toInt() // useless
-        val stk = reader.readLine().split(" ").map { num -> num.toInt() }.toMutableList()
-        var ans = 0
-        while (stk.isNotEmpty()) {
-            val li = mutableListOf<Int>(stk.last()) // 현재의 원소를 첫 번째 원소로 가진 임시 배열을 만든다.
-            stk.removeAt(stk.lastIndex)
-            extractLesserOrEqual(stk, li)
-            ans += calculateGapWithFirst(li)
+    System.out.bufferedWriter().use { writer ->
+        repeat(reader.readLine().toInt()) {
+            reader.readLine().toInt() // useless
+            val stk = reader.readLine().split(" ").map { num -> num.toInt() }.toMutableList()
+            var sumAllBenefits = 0
+            while (stk.isNotEmpty()) {
+                val li = mutableListOf<Int>(stk.last()) // 현재의 원소를 첫 번째 원소로 가진 임시 배열을 만든다.
+                stk.removeAt(stk.lastIndex)
+                extractLesserOrEqual(stk, li)
+                sumAllBenefits += calculateGapWithFirst(li)
+            }
+            writer.write("#${it + 1} $sumAllBenefits\n")
         }
-        println("#${it + 1} $ans")
     }
 }
 
