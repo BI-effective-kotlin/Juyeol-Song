@@ -1,5 +1,7 @@
 package ps.ps
 
+import java.util.Stack
+
 /**
  * @author : Unagi_zoso
  * @date : 2023-11-07
@@ -23,11 +25,13 @@ fun main() = System.`in`.bufferedReader().use { reader ->
     System.out.bufferedWriter().use { writer ->
         repeat(reader.readLine().toInt()) {
             reader.readLine().toInt() // useless
-            val stk = reader.readLine().split(" ").map { num -> num.toInt() }.toMutableList()
+            val stk = Stack<Int>().apply {
+                this.addAll(reader.readLine().split(" ").map { num -> num.toInt() })
+            }
+
             var sumAllBenefits = 0
             while (stk.isNotEmpty()) {
-                val li = mutableListOf<Int>(stk.last()) // 현재의 원소를 첫 번째 원소로 가진 임시 배열을 만든다.
-                stk.removeAt(stk.lastIndex)
+                val li = mutableListOf<Int>(stk.pop()) // 현재의 원소를 첫 번째 원소로 가진 임시 배열을 만든다.
                 extractLesserOrEqual(stk, li)
                 sumAllBenefits += calculateGapWithFirst(li)
             }
@@ -37,18 +41,13 @@ fun main() = System.`in`.bufferedReader().use { reader ->
 }
 
 // 현재의 원소보다 작거나 같은 원소들을 stk에서 li로 옮겨담는다.
-private fun extractLesserOrEqual(stk: MutableList<Int>, li: MutableList<Int>) {
+private fun extractLesserOrEqual(stk: Stack<Int>, li: MutableList<Int>) {
     while (stk.isNotEmpty() && stk.last() <= li.first()) {
-        li.add(stk.last())
-        stk.removeAt(stk.lastIndex)
+        li.add(stk.pop())
     }
 }
 
 // 첫 번째 원소(현재의 원소)와 다른 원소들의 차이를 합하여 반환한다.
 private fun calculateGapWithFirst(li: List<Int>): Int {
-    var sumOfGaps = 0
-    for (i in 0 until li.size) {
-        sumOfGaps += li.first() - li[i]
-    }
-    return sumOfGaps
+    return li.sumOf { li[0] - it }
 }
